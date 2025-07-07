@@ -24,7 +24,8 @@ from langchain.memory import ConversationBufferMemory
 from dotenv import load_dotenv
 import os
 
-st.title("🇰🇪 Kenya Finance Bill 2025 - Q&A")
+st.title("Kenya Finance Bill 2025 RAG - Q&A")
+os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
 load_dotenv()
 
