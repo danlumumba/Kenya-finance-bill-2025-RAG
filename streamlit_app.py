@@ -13,7 +13,8 @@ import streamlit as st
 from langchain.retrievers import ParentDocumentRetriever
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
+from langchain.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 from langchain.storage import InMemoryStore
@@ -23,6 +24,7 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from dotenv import load_dotenv
 import os
+from langchain.docstore import InMemoryDocstore
 
 st.title("Kenya Finance Bill 2025 RAG - Q&A")
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
@@ -31,9 +33,9 @@ load_dotenv()
 
 #groq_api_key = st.secrets["GROQ_API_KEY"]
 load_dotenv()
-groq_api_key = st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
+api_key = st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
 
-if not groq_api_key:
+if not api_key:
     raise ValueError("GROQ API key not loaded successfully")
 
 # api_key = os.getenv('GROQ_API_KEY')
@@ -59,41 +61,52 @@ print(len(parent_docs))
 child_splitter = RecursiveCharacterTextSplitter(chunk_size = 1000, chunk_overlap = 700)
 
 #initializing the embedding model
-bge_model = SentenceTransformer("BAAI/bge-base-en")
-
-#creating the embedding class
-class BGEEmbeddings:
-  def embed_documents(self, text):
-    """Generate Embeddings for batch of documents"""
-    return bge_model.encode(text, batch_size = 8, normalize_embeddings = True).tolist()
-  def embed_query(self, text):
-    """Generate Embeddings for a single query"""
-    return bge_model.encode([text],normalize_embeddings = True).tolist()[0]
+# bge_model = SentenceTransformer("BAAI/bge-base-en")
 
 
-from langchain.embeddings.base import Embeddings
+# #creating the embedding class
+# class BGEEmbeddings:
+#   def embed_documents(self, text):
+#     """Generate Embeddings for batch of documents"""
+#     return bge_model.encode(text, batch_size = 8, normalize_embeddings = True).tolist()
+#   def embed_query(self, text):
+#     """Generate Embeddings for a single query"""
+#     return bge_model.encode([text],normalize_embeddings = True).tolist()[0]
 
-class LangchainBGEEmbeddings(Embeddings):
-    def embed_documents(self, texts):
-        return BGEEmbeddings().embed_documents(texts)
 
-    def embed_query(self, text):
-        return BGEEmbeddings().embed_query(text)
-embedding = LangchainBGEEmbeddings()
+# from langchain.embeddings.base import Embeddings
 
-# Setup Vector Store and Retriever
+# class LangchainBGEEmbeddings(Embeddings):
+#     def embed_documents(self, texts):
+#         return BGEEmbeddings().embed_documents(texts)
 
-store = InMemoryStore()
-vectorstore = Chroma(collection_name="kenya_finance_bill",
-                     embedding_function=embedding,
-                     persist_directory = 'finance_bill_vectorstore')
+#     def embed_query(self, text):
+#         return BGEEmbeddings().embed_query(text)
+# embedding = LangchainBGEEmbeddings()
+
+# # Setup Vector Store and Retriever
+
+# store = InMemoryStore()
+# vectorstore = Chroma(collection_name="kenya_finance_bill",
+#                      embedding_function=embedding,
+#                      persist_directory = 'finance_bill_vectorstore')
+
+# retriever = ParentDocumentRetriever(
+#     vectorstore=vectorstore,
+#     docstore=store,
+#     child_splitter=child_splitter
+# )
+
+# FAISS does not persist by default, so we use it in memory
+vectorstore = FAISS.from_documents([], embedding)  # Initialize empty FAISS index
+
+store = InMemoryDocstore({})  # Use langchain's in-memory docstore
 
 retriever = ParentDocumentRetriever(
     vectorstore=vectorstore,
     docstore=store,
     child_splitter=child_splitter
 )
-
 #Add Documents to the Retriever
 
 retriever.add_documents(parent_docs)
