@@ -61,52 +61,41 @@ print(len(parent_docs))
 child_splitter = RecursiveCharacterTextSplitter(chunk_size = 1000, chunk_overlap = 700)
 
 #initializing the embedding model
-# bge_model = SentenceTransformer("BAAI/bge-base-en")
-
+bge_model = SentenceTransformer("BAAI/bge-base-en")
 
 # #creating the embedding class
-# class BGEEmbeddings:
-#   def embed_documents(self, text):
-#     """Generate Embeddings for batch of documents"""
-#     return bge_model.encode(text, batch_size = 8, normalize_embeddings = True).tolist()
-#   def embed_query(self, text):
-#     """Generate Embeddings for a single query"""
-#     return bge_model.encode([text],normalize_embeddings = True).tolist()[0]
+class BGEEmbeddings:
+  def embed_documents(self, text):
+    """Generate Embeddings for batch of documents"""
+    return bge_model.encode(text, batch_size = 8, normalize_embeddings = True).tolist()
+  def embed_query(self, text):
+    """Generate Embeddings for a single query"""
+    return bge_model.encode([text],normalize_embeddings = True).tolist()[0]
 
 
-# from langchain.embeddings.base import Embeddings
+from langchain.embeddings.base import Embeddings
 
-# class LangchainBGEEmbeddings(Embeddings):
-#     def embed_documents(self, texts):
-#         return BGEEmbeddings().embed_documents(texts)
+class LangchainBGEEmbeddings(Embeddings):
+    def embed_documents(self, texts):
+        return BGEEmbeddings().embed_documents(texts)
 
-#     def embed_query(self, text):
-#         return BGEEmbeddings().embed_query(text)
-# embedding = LangchainBGEEmbeddings()
+    def embed_query(self, text):
+        return BGEEmbeddings().embed_query(text)
+embedding = LangchainBGEEmbeddings()
 
 # # Setup Vector Store and Retriever
 
-# store = InMemoryStore()
-# vectorstore = Chroma(collection_name="kenya_finance_bill",
-#                      embedding_function=embedding,
-#                      persist_directory = 'finance_bill_vectorstore')
-
-# retriever = ParentDocumentRetriever(
-#     vectorstore=vectorstore,
-#     docstore=store,
-#     child_splitter=child_splitter
-# )
-
-# FAISS does not persist by default, so we use it in memory
-vectorstore = FAISS.from_documents([], embedding)  # Initialize empty FAISS index
-
-store = InMemoryDocstore({})  # Use langchain's in-memory docstore
+store = InMemoryStore()
+vectorstore = Chroma(collection_name="kenya_finance_bill",
+                     embedding_function=embedding,
+                     persist_directory = 'finance_bill_vectorstore')
 
 retriever = ParentDocumentRetriever(
     vectorstore=vectorstore,
     docstore=store,
     child_splitter=child_splitter
 )
+
 #Add Documents to the Retriever
 
 retriever.add_documents(parent_docs)
