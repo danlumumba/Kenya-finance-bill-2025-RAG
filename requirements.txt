@@ -7,4 +7,3 @@ langchain-community
 sentence-transformers
 protobuf<4.0
 python-dotenv
-sqlite3
