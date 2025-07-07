@@ -29,13 +29,18 @@ st.title("🇰🇪 Kenya Finance Bill 2025 - Q&A")
 load_dotenv()
 
 #groq_api_key = st.secrets["GROQ_API_KEY"]
+load_dotenv()
+groq_api_key = st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY")
 
-api_key = os.getenv('GROQ_API_KEY')
+if not groq_api_key:
+    raise ValueError("GROQ API key not loaded successfully")
 
-if not api_key:
-  raise ValueError('GROQ API key not loaded successful')
-else:
-  print('API key loaded successfully')
+# api_key = os.getenv('GROQ_API_KEY')
+
+# if not api_key:
+#   raise ValueError('GROQ API key not loaded successful')
+# else:
+#   print('API key loaded successfully')
 
 pdf_link = r'C:\Users\NGARE\DS_Python_Lux\Ds_projects\FinanceBillRag\The Finance Bill 2025.pdf'
 
