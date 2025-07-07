@@ -9,10 +9,9 @@ Retrieval Augmented Generation
 > - Vector databases - A vector database is a specialized type of database designed to store, index, and search vector embeddings—which are numerical representations of data like text, images, audio, or video.
 """
 
-# !pip install langchain-groq pypdf
-# !pip install chromadb
-
-# !pip install -U langchain-community
+!pip install langchain-groq pypdf
+!pip install chromadb
+!pip install -U langchain-community
 
 #import libraries
 #LangChain
