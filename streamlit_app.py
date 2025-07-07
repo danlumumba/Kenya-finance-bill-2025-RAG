@@ -9,14 +9,7 @@ Retrieval Augmented Generation
 > - Vector databases - A vector database is a specialized type of database designed to store, index, and search vector embeddings—which are numerical representations of data like text, images, audio, or video.
 """
 
-!pip install langchain-groq pypdf
-!pip install chromadb
-!pip install -U langchain-community
-
-#import libraries
-#LangChain
-#Retrievers
-
+import streamlit as st
 from langchain.retrievers import ParentDocumentRetriever
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -31,14 +24,18 @@ from langchain.memory import ConversationBufferMemory
 from dotenv import load_dotenv
 import os
 
+st.title("🇰🇪 Kenya Finance Bill 2025 - Q&A")
+
 load_dotenv()
 
-api_key = os.getenv('API_KEY')
+groq_api_key = st.secrets["GROQ_API_KEY"]
 
-if not api_key:
-  raise ValueError('API key not loaded successful')
-else:
-  print('API key loaded successfully')
+# api_key = os.getenv('GROQ_API_KEY')
+
+# if not api_key:
+#   raise ValueError('GROQ API key not loaded successful')
+# else:
+#   print('API key loaded successfully')
 
 pdf_link = r'C:\Users\NGARE\DS_Python_Lux\Ds_projects\FinanceBillRag\The Finance Bill 2025.pdf'
 
