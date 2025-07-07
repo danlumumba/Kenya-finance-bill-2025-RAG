@@ -42,10 +42,11 @@ if not groq_api_key:
 # else:
 #   print('API key loaded successfully')
 
-pdf_link = r'C:\Users\NGARE\DS_Python_Lux\Ds_projects\FinanceBillRag\The Finance Bill 2025.pdf'
+#pdf_link = r'C:\Users\NGARE\DS_Python_Lux\Ds_projects\FinanceBillRag\The Finance Bill 2025.pdf'
 
 # Loading the PDF file
-loader = PyPDFLoader(pdf_link)
+#loader = PyPDFLoader(pdf_link)
+loader = PyPDFLoader("The_Finance_Bill_2025.pdf")
 docs = loader.load()
 
 print(len(docs))
